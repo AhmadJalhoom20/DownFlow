@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DownScrolled</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- FontAwesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <!-- Sidebar (Left) -->
+      <nav class="sidebar">
+        <div class="logo">
+          <i class="fa-solid fa-angles-down"></i>
+          <span>DownScrolled</span>
+        </div>
+        <ul class="nav-links">
+          <li class="active" data-page="home">
+            <a href="#home"
+              ><i class="fa-solid fa-house"></i> <span>Home</span></a
+            >
+          </li>
+          <li data-page="explore">
+            <a href="#explore"
+              ><i class="fa-solid fa-hashtag"></i> <span>Explore</span></a
+            >
+          </li>
+          <li data-page="notifications">
+            <a href="#notifications"
+              ><i class="fa-solid fa-bell"></i> <span>Notifications</span></a
+            >
+          </li>
+          <li data-page="messages">
+            <a href="#messages"
+              ><i class="fa-solid fa-envelope"></i> <span>Messages</span></a
+            >
+          </li>
+          <li data-page="profile">
+            <a href="#profile"
+              ><i class="fa-solid fa-user"></i> <span>Profile</span></a
+            >
+          </li>
+          <li data-page="settings" class="mobile-hidden">
+            <a href="#settings"
+              ><i class="fa-solid fa-gear"></i> <span>Settings</span></a
+            >
+          </li>
+        </ul>
+        <button class="btn-primary create-post-btn trigger-create-modal">
+          <i class="fa-solid fa-plus"></i> <span class="btn-text">Post</span>
+        </button>
+
+        <div class="user-profile-mini">
+          <div class="avatar placeholder-avatar"></div>
+          <div class="user-info">
+            <span class="name">Guest User</span>
+            <span class="handle">@guest</span>
+          </div>
+          <i class="fa-solid fa-ellipsis"></i>
+        </div>
+      </nav>
+
+      <!-- Main Content Area -->
+      <main class="main-feed" id="main-content">
+        <!-- Home Feed View -->
+        <div id="view-home" class="view-section active">
+          <header class="feed-header">
+            <h2>Home</h2>
+            <div class="tabs">
+              <button class="tab active" id="tab-for-you">For You</button>
+              <button class="tab" id="tab-following">Following</button>
+            </div>
+          </header>
+
+          <!-- Stories Section -->
+          <div class="stories-container">
+            <div class="story-item create-story">
+              <div class="story-avatar current-user-avatar">
+                <i class="fa-solid fa-plus"></i>
+              </div>
+              <span class="story-user">Add Story</span>
+            </div>
+            <!-- Stories will be injected here -->
+            <div id="stories-list"></div>
+          </div>
+
+          <div class="create-post-placeholder">
+            <div class="avatar placeholder-avatar current-user-avatar"></div>
+            <input
+              type="text"
+              placeholder="What's happening?"
+              readonly
+              class="trigger-create-modal"
+            />
+          </div>
+
+          <div id="feed-container">
+            <div class="loading-spinner">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explore View -->
+        <div id="view-explore" class="view-section" style="display: none">
+          <header class="feed-header">
+            <div class="search-bar-header">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input
+                type="text"
+                id="explore-search-input"
+                placeholder="Search DownScrolled"
+              />
+            </div>
+          </header>
+          <div class="explore-grid" id="explore-grid">
+            <!-- Random posts grid -->
+            <div class="loading-spinner">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications View -->
+        <div id="view-notifications" class="view-section" style="display: none">
+          <header class="feed-header">
+            <h2>Notifications</h2>
+          </header>
+          <div id="notifications-list">
+            <div class="no-posts">No notifications yet.</div>
+          </div>
+        </div>
+
+        <!-- Messages View -->
+        <div id="view-messages" class="view-section" style="display: none">
+          <header class="feed-header">
+            <h2>Messages</h2>
+            <div class="header-actions">
+              <i class="fa-regular fa-envelope" id="btn-new-message"></i>
+            </div>
+          </header>
+          <div class="messages-layout">
+            <div class="conversations-list" id="conversations-list">
+              <!-- Chat list -->
+              <div class="loading-spinner">
+                <i class="fa-solid fa-circle-notch fa-spin"></i>
+              </div>
+            </div>
+            <div class="chat-window" id="chat-window">
+              <div class="no-chat-selected">
+                <h2>Select a message</h2>
+                <p>
+                  Choose from your existing conversations, start a new one, or
+                  just keep swimming.
+                </p>
+                <button class="btn-primary btn-sm" id="btn-new-message-main">
+                  New Message
+                </button>
+              </div>
+              <!-- Active Chat Content (Hidden by default) -->
+              <div class="active-chat-content" style="display: none">
+                <div class="chat-header">
+                  <div
+                    class="avatar placeholder-avatar"
+                    id="chat-header-avatar"
+                  ></div>
+                  <span id="chat-header-name">User</span>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                  <!-- Messages injected here -->
+                </div>
+                <div class="chat-input-area">
+                  <input
+                    type="text"
+                    id="chat-input"
+                    placeholder="Start a new message"
+                  />
+                  <button id="chat-send-btn">
+                    <i class="fa-solid fa-paper-plane"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile View -->
+        <div id="view-profile" class="view-section" style="display: none">
+          <header class="feed-header">
+            <div class="header-back">
+              <i
+                class="fa-solid fa-arrow-left back-btn"
+                id="profile-back-btn"
+              ></i>
+              <div class="header-info">
+                <h2 id="profile-name-header">User Name</h2>
+                <span class="post-count" id="profile-post-count">0 posts</span>
+              </div>
+            </div>
+            <div class="header-actions mobile-only">
+              <i class="fa-solid fa-gear" id="btn-mobile-settings"></i>
+            </div>
+          </header>
+          <div class="profile-hero">
+            <div class="profile-banner"></div>
+            <div class="profile-avatar-large placeholder-avatar"></div>
+            <div class="profile-actions">
+              <button class="btn-edit-profile" id="btn-profile-action">
+                Edit Profile
+              </button>
+            </div>
+          </div>
+          <div class="profile-details">
+            <h2 id="profile-name-display">User Name</h2>
+            <span id="profile-handle-display">@username</span>
+            <p id="profile-bio-display" class="bio">No bio yet.</p>
+            <div class="profile-meta">
+              <span
+                ><i class="fa-regular fa-calendar"></i> Joined
+                <span id="profile-join-date">January 2026</span></span
+              >
+            </div>
+            <div class="follow-stats">
+              <span class="clickable-stat" id="following-stat"
+                ><strong id="following-count">0</strong> Following</span
+              >
+              <span class="clickable-stat" id="followers-stat"
+                ><strong id="followers-count">0</strong> Followers</span
+              >
+            </div>
+          </div>
+          <div class="tabs">
+            <button class="tab active" id="tab-profile-posts">Posts</button>
+            <button class="tab" id="tab-profile-replies">Replies</button>
+            <button class="tab" id="tab-profile-media">Media</button>
+            <button class="tab" id="tab-profile-likes">Likes</button>
+          </div>
+          <div id="profile-feed-container"></div>
+        </div>
+
+        <!-- Settings View -->
+        <div id="view-settings" class="view-section" style="display: none">
+          <header class="feed-header">
+            <h2>Settings</h2>
+          </header>
+          <div class="settings-container">
+            <div class="setting-item">
+              <h3>Account Information</h3>
+              <p>Update your username and email.</p>
+              <div class="input-group">
+                <input
+                  type="text"
+                  id="settings-username"
+                  placeholder="New Username"
+                />
+              </div>
+              <button class="btn-sm" id="btn-update-account">
+                Update Info
+              </button>
+            </div>
+            <div class="setting-item">
+              <h3>Password</h3>
+              <p>Change your password.</p>
+              <div class="input-group">
+                <input
+                  type="password"
+                  id="settings-new-password"
+                  placeholder="New Password"
+                />
+              </div>
+              <button class="btn-sm" id="btn-change-password">
+                Change Password
+              </button>
+            </div>
+            <div class="setting-item danger-zone">
+              <h3>Delete Account</h3>
+              <p>Permanently delete your account and data.</p>
+              <button class="btn-danger" id="btn-delete-account">
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Panel (Suggestions) -->
+      <aside class="right-panel">
+        <div class="search-bar">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            id="right-search-input"
+            placeholder="Search DownScrolled"
+          />
+        </div>
+
+        <div class="card trending-card">
+          <h3>Trending for you</h3>
+          <div id="trends-container">
+            <div class="loading-spinner-sm">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="card who-to-follow">
+          <h3>Who to follow</h3>
+          <div id="who-to-follow-container">
+            <div class="loading-spinner-sm">
+              <i class="fa-solid fa-circle-notch fa-spin"></i>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- Auth Modal (Locked) -->
+    <div id="auth-modal" class="modal-overlay locked">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <i class="fa-solid fa-angles-down logo-icon"></i>
+          <h2>Join DownScrolled</h2>
+          <p>The transparent social platform.</p>
+        </div>
+        <form id="auth-form">
+          <div class="input-group">
+            <input type="email" id="email" required placeholder=" " />
+            <label for="email">Email</label>
+          </div>
+          <div class="input-group">
+            <input type="password" id="password" required placeholder=" " />
+            <label for="password">Password</label>
+          </div>
+          <div id="auth-error" class="error-msg"></div>
+          <button
+            type="submit"
+            class="btn-primary btn-block"
+            id="auth-submit-btn"
+          >
+            Log In
+          </button>
+        </form>
+        <div class="modal-footer">
+          <p id="auth-toggle-text">
+            Don't have an account? <span id="auth-toggle-link">Sign up</span>
+          </p>
+          <p class="forgot-password-link" id="forgot-password-link">
+            Forgot Password?
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgot-password-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <h2>Reset Password</h2>
+          <p>Enter your email to receive a reset link.</p>
+        </div>
+        <form id="reset-password-form">
+          <div class="input-group">
+            <input type="email" id="reset-email" required placeholder=" " />
+            <label for="reset-email">Email</label>
+          </div>
+          <div id="reset-msg" class="success-msg"></div>
+          <div id="reset-error" class="error-msg"></div>
+          <button type="submit" class="btn-primary btn-block">
+            Send Reset Link
+          </button>
+          <button type="button" class="btn-text-only" id="close-reset-modal">
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Create Post Modal -->
+    <div id="create-post-modal" class="modal-overlay">
+      <div class="modal-content glass-effect large-modal">
+        <div class="modal-header-row">
+          <button class="btn-close" id="close-create-post">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <div class="privacy-selector">
+            <select id="post-privacy-select">
+              <option value="public">Everyone</option>
+              <option value="followers">Followers</option>
+              <option value="friends">Friends (Mutual)</option>
+              <option value="specific">Specific People</option>
+            </select>
+          </div>
+          <button class="btn-primary btn-sm" id="submit-post-btn">Post</button>
+        </div>
+        <div class="create-post-body">
+          <div class="avatar placeholder-avatar current-user-avatar"></div>
+          <div class="input-area" style="flex-grow: 1">
+            <textarea
+              id="post-text-input"
+              placeholder="What's happening?"
+            ></textarea>
+
+            <!-- Poll Creation UI -->
+            <div id="poll-creation-ui" style="display: none; margin-top: 10px">
+              <div class="poll-input-group">
+                <input
+                  type="text"
+                  class="poll-option-input"
+                  placeholder="Choice 1"
+                />
+                <input
+                  type="text"
+                  class="poll-option-input"
+                  placeholder="Choice 2"
+                />
+              </div>
+              <button class="btn-text-only" id="add-poll-option">
+                + Add option
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="media-preview" id="post-media-preview"></div>
+        <div class="create-post-footer">
+          <label for="post-image-upload" class="media-btn"
+            ><i class="fa-regular fa-image"></i
+          ></label>
+          <input type="file" id="post-image-upload" accept="image/*" hidden />
+
+          <label for="post-video-upload" class="media-btn"
+            ><i class="fa-solid fa-video"></i
+          ></label>
+          <input type="file" id="post-video-upload" accept="video/*" hidden />
+
+          <span class="media-btn" id="btn-add-list"
+            ><i class="fa-solid fa-list-ul"></i
+          ></span>
+
+          <div class="emoji-wrapper" style="position: relative">
+            <span class="media-btn" id="btn-add-emoji"
+              ><i class="fa-regular fa-face-smile"></i
+            ></span>
+            <div id="emoji-picker" class="emoji-picker" style="display: none">
+              <!-- Emojis injected via JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Select Users Modal (for Specific Privacy) -->
+    <div id="select-users-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header-row">
+          <h2>Select People</h2>
+          <button class="btn-close" id="close-select-users">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div id="select-users-list" class="user-list-container">
+          <!-- Checkbox list of followers -->
+        </div>
+        <button class="btn-primary btn-block" id="confirm-selection-btn">
+          Done
+        </button>
+      </div>
+    </div>
+
+    <!-- Create Story Modal -->
+    <div id="create-story-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <h2>Add to Story</h2>
+        </div>
+        <div class="story-upload-area">
+          <div class="media-preview" id="story-media-preview"></div>
+          <label for="story-image-upload" class="btn-primary btn-block"
+            >Select Image</label
+          >
+          <input type="file" id="story-image-upload" accept="image/*" hidden />
+        </div>
+        <button
+          class="btn-primary btn-block"
+          id="submit-story-btn"
+          style="margin-top: 10px"
+        >
+          Share Story
+        </button>
+        <button class="btn-text-only" id="close-create-story">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Story Viewer Modal -->
+    <div id="story-viewer-modal" class="modal-overlay full-screen">
+      <button class="btn-close-story" id="close-story-viewer">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <div class="story-view-content">
+        <div class="story-progress-bar"><div class="progress"></div></div>
+        <div class="story-header">
+          <div class="avatar placeholder-avatar" id="story-view-avatar"></div>
+          <span id="story-view-name">User</span>
+          <span id="story-view-time">1h</span>
+        </div>
+        <div class="story-image-container" id="story-view-image"></div>
+      </div>
+    </div>
+
+    <!-- Comment Modal -->
+    <div id="comment-modal" class="modal-overlay">
+      <div class="modal-content glass-effect large-modal">
+        <div class="modal-header-row">
+          <button class="btn-close" id="close-comment-modal">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+          <h2>Reply</h2>
+        </div>
+        <div class="original-post-preview" id="comment-post-preview">
+          <!-- Original post content snippet -->
+        </div>
+
+        <!-- Comments List -->
+        <div id="comments-list-container" class="comments-list-container">
+          <!-- Comments injected here -->
+        </div>
+
+        <div class="create-post-body">
+          <div class="avatar placeholder-avatar current-user-avatar"></div>
+          <textarea
+            id="comment-text-input"
+            placeholder="Post your reply"
+          ></textarea>
+        </div>
+        <div class="create-post-footer">
+          <button class="btn-primary btn-sm" id="submit-comment-btn">
+            Reply
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Profile Modal -->
+    <div id="edit-profile-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <h2>Edit Profile</h2>
+        </div>
+        <form id="edit-profile-form">
+          <div class="profile-upload-section">
+            <div
+              class="avatar-preview placeholder-avatar"
+              id="edit-avatar-preview"
+            ></div>
+            <label for="avatar-upload" class="btn-sm">Change Avatar</label>
+            <input type="file" id="avatar-upload" accept="image/*" hidden />
+          </div>
+          <div class="input-group">
+            <input type="text" id="edit-name" required placeholder=" " />
+            <label for="edit-name">Name</label>
+          </div>
+          <div class="input-group">
+            <input type="text" id="edit-bio" placeholder=" " />
+            <label for="edit-bio">Bio</label>
+          </div>
+          <div id="edit-profile-error" class="error-msg"></div>
+          <button type="submit" class="btn-primary btn-block">Save</button>
+          <button type="button" class="btn-text-only" id="close-edit-profile">
+            Cancel
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div id="logout-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <h2>Log out of DownScrolled?</h2>
+          <p>You can always log back in at any time.</p>
+        </div>
+        <button class="btn-primary btn-block" id="confirm-logout-btn">
+          Log out
+        </button>
+        <button class="btn-text-only" id="cancel-logout-btn">Cancel</button>
+      </div>
+    </div>
+
+    <!-- User List Modal (Followers/Following) -->
+    <div id="user-list-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header-row">
+          <h2 id="user-list-title">Users</h2>
+          <button class="btn-close" id="close-user-list">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div id="user-list-container" class="user-list-container">
+          <div class="loading-spinner">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- New Message Modal -->
+    <div id="new-message-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header-row">
+          <h2>New Message</h2>
+          <button class="btn-close" id="close-new-message">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div class="search-bar" style="margin-bottom: 20px">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input
+            type="text"
+            id="new-message-search"
+            placeholder="Search people"
+          />
+        </div>
+        <div id="new-message-list-container" class="user-list-container">
+          <!-- Users injected here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Message Modal -->
+    <div id="edit-message-modal" class="modal-overlay">
+      <div class="modal-content glass-effect">
+        <div class="modal-header">
+          <h2>Edit Message</h2>
+        </div>
+        <div class="input-group">
+          <input
+            type="text"
+            id="edit-message-input"
+            placeholder="Edit your message"
+          />
+        </div>
+        <button class="btn-primary btn-block" id="confirm-edit-message-btn">
+          Save
+        </button>
+        <button class="btn-text-only" id="cancel-edit-message-btn">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <!-- Message Context Menu -->
+    <div id="message-context-menu" class="context-menu" style="display: none">
+      <div class="menu-item" id="ctx-edit-msg">Edit</div>
+      <div class="menu-item danger" id="ctx-delete-msg">Delete</div>
+    </div>
+
+    <!-- Mobile Bottom Nav -->
+    <nav class="mobile-nav">
+      <a href="#home" class="active" data-page="home"
+        ><i class="fa-solid fa-house"></i
+      ></a>
+      <a href="#explore" data-page="explore"
+        ><i class="fa-solid fa-magnifying-glass"></i
+      ></a>
+      <a href="#create" class="create-mobile trigger-create-modal"
+        ><i class="fa-solid fa-plus"></i
+      ></a>
+      <a href="#notifications" data-page="notifications"
+        ><i class="fa-solid fa-bell"></i
+      ></a>
+      <a href="#profile" data-page="profile"
+        ><i class="fa-solid fa-user"></i
+      ></a>
+    </nav>
+
+    <!-- Scripts -->
+    <script type="module" src="assets/js/firebase-config.js"></script>
+    <script type="module" src="assets/js/app.js"></script>
+  </body>
+</html>
