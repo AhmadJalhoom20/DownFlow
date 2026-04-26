@@ -1,4 +1,5 @@
 import { app, auth, db, storage } from "./firebase-config.js";
+import { generateSmartAI } from "./ai-service.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -99,6 +100,9 @@ const storyImageUpload = document.getElementById("story-image-upload");
 const storyMediaPreview = document.getElementById("story-media-preview");
 const createStoryTrigger = document.querySelector(".create-story");
 
+
+
+
 const storyViewerModal = document.getElementById("story-viewer-modal");
 const closeStoryViewerBtn = document.getElementById("close-story-viewer");
 const storyViewImage = document.getElementById("story-view-image");
@@ -139,6 +143,7 @@ const chatHeaderName = document.getElementById("chat-header-name");
 const chatMessages = document.getElementById("chat-messages");
 const chatInput = document.getElementById("chat-input");
 const chatSendBtn = document.getElementById("chat-send-btn");
+const chatAiBtn = document.getElementById("chat-ai-btn");
 
 // Chat Context Menu & Edit
 const messageContextMenu = document.getElementById("message-context-menu");
@@ -200,6 +205,27 @@ let currentFeedType = "forYou"; // 'forYou' or 'following'
 let selectedMessageId = null; // For edit/delete
 let isPollMode = false;
 let uploadedVideoFile = null;
+let currentCategory = "all";
+let currentPostForComment = null;
+
+// --- Skeleton Loaders ---
+function showSkeletons(container, count = 3) {
+  container.innerHTML = "";
+  for (let i = 0; i < count; i++) {
+    const skel = document.createElement("div");
+    skel.className = "skeleton-post";
+    skel.innerHTML = `
+            <div class="skeleton-avatar skeleton"></div>
+            <div class="skeleton-content">
+                <div class="skeleton-line skeleton" style="width: 40%"></div>
+                <div class="skeleton-line skeleton"></div>
+                <div class="skeleton-line skeleton short"></div>
+                <div class="skeleton-media skeleton"></div>
+            </div>
+        `;
+    container.appendChild(skel);
+  }
+}
 
 // --- Authentication Logic ---
 
@@ -643,6 +669,7 @@ submitPostBtn.addEventListener("click", async () => {
       authorFollowersCount: userData.followers ? userData.followers.length : 0,
       timestamp: serverTimestamp(),
       likes: [],
+      likesCount: 0,
       commentsCount: 0,
       privacy: privacy,
       allowedUsers: privacy === "specific" ? selectedSpecificUsers : [],
@@ -763,70 +790,60 @@ function loadFeed(type = "forYou") {
   currentFeedType = type;
   if (feedUnsubscribe) feedUnsubscribe();
 
-  feedContainer.innerHTML =
-    '<div class="loading-spinner"><i class="fa-solid fa-circle-notch fa-spin"></i></div>';
+  showSkeletons(feedContainer, 5);
 
-  const q = query(
-    collection(db, "posts"),
-    orderBy("timestamp", "desc"),
-    limit(50),
-  );
+  // Optimized For You: Fetch public posts. 
+  // We fetch by timestamp first to ensure everything shows up, 
+  // then we will sort popular ones if they have the field.
+  let q;
+  if (type === "forYou") {
+    // To ensure NO post is hidden, we fetch public posts ordered by timestamp,
+    // but we can prioritize those with likesCount in our local sorting or use a better query.
+    q = query(
+      collection(db, "posts"),
+      where("privacy", "==", "public"),
+      orderBy("timestamp", "desc"),
+      limit(100)
+    );
+  } else {
+    q = query(
+      collection(db, "posts"),
+      orderBy("timestamp", "desc"),
+      limit(50)
+    );
+  }
 
   feedUnsubscribe = onSnapshot(q, (snapshot) => {
     feedContainer.innerHTML = "";
     let hasPosts = false;
 
+    let posts = [];
     snapshot.forEach((doc) => {
-      const post = doc.data();
+      posts.push({ id: doc.id, ...doc.data() });
+    });
 
-      // Feed Type Filtering
+    // For You: Secondary Sort by popularity in JavaScript to handle missing 'likesCount' fields
+    if (type === "forYou") {
+      posts.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0));
+    }
+
+    posts.forEach((post) => {
+      // If Following tab, only show friends/following
       if (type === "following") {
-        const isFollowing =
-          userData.following && userData.following.includes(post.authorId);
+        const isFollowing = userData.following && userData.following.includes(post.authorId);
         if (post.authorId !== currentUser.uid && !isFollowing) return;
-      } else if (type === "forYou") {
-        // Following OR Follower OR Famous (>1000)
-        const isFollowing =
-          userData.following && userData.following.includes(post.authorId);
-        const isFollower =
-          userData.followers && userData.followers.includes(post.authorId);
-        const isFamous = post.authorFollowersCount > 1000;
-
-        if (
-          post.authorId !== currentUser.uid &&
-          !isFollowing &&
-          !isFollower &&
-          !isFamous
-        )
-          return;
       }
 
-      // Privacy Filtering (Additional Layer)
-      if (post.privacy === "followers") {
-        const isFollowing =
-          userData.following && userData.following.includes(post.authorId);
-        if (post.authorId !== currentUser.uid && !isFollowing) return;
-      } else if (post.privacy === "friends") {
-        const isFollowing =
-          userData.following && userData.following.includes(post.authorId);
-        const isFollower =
-          userData.followers && userData.followers.includes(post.authorId);
-        if (post.authorId !== currentUser.uid && (!isFollowing || !isFollower))
-          return;
-      } else if (post.privacy === "specific") {
-        if (
-          post.authorId !== currentUser.uid &&
-          (!post.allowedUsers || !post.allowedUsers.includes(currentUser.uid))
-        )
-          return;
-      }
-
-      feedContainer.appendChild(createPostElement(doc.id, post));
+      feedContainer.appendChild(createPostElement(post.id, post));
       hasPosts = true;
     });
 
     if (!hasPosts) {
-      feedContainer.innerHTML = `<div class="no-posts">No posts to show in ${type === "following" ? "Following" : "For You"}.</div>`;
+      if (type === "following") {
+        feedContainer.innerHTML = `<div class="no-posts">You aren't following anyone yet. Head over to Explore to find trends!</div>`;
+      } else {
+        feedContainer.innerHTML = `<div class="no-posts">No trending posts yet. Be the first to post something legendary!</div>`;
+      }
     }
   });
 }
@@ -922,10 +939,19 @@ function createPostElement(postId, post) {
   div.querySelector(".like-btn").addEventListener("click", async (e) => {
     e.stopPropagation();
     const postRef = doc(db, "posts", postId);
-    if (post.likes && post.likes.includes(currentUser.uid)) {
-      await updateDoc(postRef, { likes: arrayRemove(currentUser.uid) });
+    const isLiked = post.likes && post.likes.includes(currentUser.uid);
+    const newCount = (post.likesCount || 0) + (isLiked ? -1 : 1);
+
+    if (isLiked) {
+      await updateDoc(postRef, {
+        likes: arrayRemove(currentUser.uid),
+        likesCount: Math.max(0, newCount),
+      });
     } else {
-      await updateDoc(postRef, { likes: arrayUnion(currentUser.uid) });
+      await updateDoc(postRef, {
+        likes: arrayUnion(currentUser.uid),
+        likesCount: newCount,
+      });
       if (post.authorId !== currentUser.uid) {
         addNotification(post.authorId, "like", postId);
       }
@@ -1042,6 +1068,7 @@ async function performSearch(queryText) {
 // --- Comments Logic ---
 function openCommentModal(postId, post) {
   currentReplyPostId = postId;
+  currentPostForComment = post;
   commentModal.classList.add("active");
   commentPostPreview.innerHTML = `
         <div style="display:flex; gap:10px; margin-bottom:10px; opacity:0.7;">
@@ -1086,6 +1113,47 @@ function openCommentModal(postId, post) {
 closeCommentModalBtn.addEventListener("click", () =>
   commentModal.classList.remove("active"),
 );
+
+// AI Comment Logic
+const btnAiComment = document.getElementById("btn-ai-comment");
+btnAiComment.addEventListener("click", async () => {
+    if (!currentPostForComment || !currentPostForComment.text) return;
+    
+    btnAiComment.classList.add("thinking");
+    btnAiComment.disabled = true;
+    commentTextInput.value = ""; // Clear previous
+    
+    await generateSmartAI(currentPostForComment.text, false, (progress) => {
+        commentTextInput.value = progress;
+    });
+    
+    btnAiComment.classList.remove("thinking");
+    btnAiComment.disabled = false;
+});
+
+// AI Post Assist Logic
+const btnAiPostAssist = document.getElementById("btn-ai-post-assist");
+
+if (btnAiPostAssist) {
+  btnAiPostAssist.addEventListener("click", async () => {
+      const currentText = postTextInput.value;
+      if (!currentText) {
+          alert("Please write a short topic or idea first so the AI can help you!");
+          return;
+      }
+      
+      btnAiPostAssist.classList.add("thinking");
+      btnAiPostAssist.disabled = true;
+      postTextInput.value = ""; // Clear previous
+      
+      await generateSmartAI(currentText, true, (progress) => {
+          postTextInput.value = progress;
+      });
+      
+      btnAiPostAssist.classList.remove("thinking");
+      btnAiPostAssist.disabled = false;
+  });
+}
 
 submitCommentBtn.addEventListener("click", async () => {
   const text = commentTextInput.value;
@@ -1184,14 +1252,14 @@ function setupConversationsListener() {
     snapshot.forEach((doc) => {
       const chat = doc.data();
       const otherUid = chat.participants.find((id) => id !== currentUser.uid);
-      const otherUser = chat.participantData[otherUid];
+      const otherUser = chat.participantData[otherUid] || { name: "User", photo: "" };
 
       const div = document.createElement("div");
       div.className = `conversation-item ${activeChatId === doc.id ? "active" : ""}`;
       div.innerHTML = `
                 <div class="avatar placeholder-avatar" style="background-image: url('${otherUser.photo || ""}')"></div>
                 <div class="info">
-                    <h4>${otherUser.name}</h4>
+                    <h4>${otherUser.name || "Unknown"}</h4>
                     <span class="last-msg">${chat.lastMessage || "Start a conversation"}</span>
                 </div>
             `;
@@ -1206,11 +1274,11 @@ function openChatWindow(chatId, otherUser) {
   noChatSelected.style.display = "none";
   activeChatContent.style.display = "flex";
 
-  chatHeaderName.textContent = otherUser.name || otherUser.username;
+  chatHeaderName.textContent = otherUser.name || otherUser.username || "User";
   setAvatar(
     chatHeaderAvatar,
     otherUser.photo || otherUser.photoURL,
-    otherUser.name || otherUser.username,
+    otherUser.name || otherUser.username || "User",
   );
 
   // Highlight active conversation
@@ -1339,6 +1407,39 @@ chatSendBtn.addEventListener("click", sendMessage);
 chatInput.addEventListener("keypress", (e) => {
   if (e.key === "Enter") sendMessage();
 });
+
+if (chatAiBtn) {
+  chatAiBtn.addEventListener("click", async () => {
+    if (!activeChatId) return;
+    
+    chatAiBtn.classList.add("thinking");
+    
+    try {
+      // Gather last 6 messages for context
+      const messages = Array.from(chatMessages.querySelectorAll(".message-bubble"))
+        .slice(-6)
+        .map(el => el.innerText.replace("(edited)", "").trim())
+        .join("\n");
+
+      if (!messages) {
+           chatAiBtn.classList.remove("thinking");
+           return;
+      }
+
+      const aiReply = await generateSmartAI(messages, false, (progress) => {
+          chatInput.value = progress;
+      });
+      if (aiReply) {
+        chatInput.value = aiReply; // Ensure final text
+        chatInput.focus();
+      }
+    } catch (error) {
+      console.error("AI Chat Error:", error);
+    } finally {
+      chatAiBtn.classList.remove("thinking");
+    }
+  });
+}
 
 async function sendMessage() {
   const text = chatInput.value.trim();
@@ -1687,28 +1788,103 @@ navLinks.forEach((link) => {
   });
 });
 
+// --- Explore Category Logic ---
+document.querySelectorAll(".category-btn").forEach((btn) => {
+  btn.addEventListener("click", (e) => {
+    document
+      .querySelectorAll(".category-btn")
+      .forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    currentCategory = btn.dataset.category;
+    loadExplore();
+  });
+});
+
 async function loadExplore() {
   exploreGrid.innerHTML = "";
-  exploreGrid.style.display = "block"; // Use block for feed style
-  const q = query(
-    collection(db, "posts"),
-    orderBy("timestamp", "desc"),
-    limit(50),
-  );
-  const snapshot = await getDocs(q);
 
-  if (snapshot.empty) {
-    exploreGrid.innerHTML =
-      '<p style="text-align:center; padding:20px;">No posts found.</p>';
-    return;
+  // Show grid skeletons
+  for (let i = 0; i < 9; i++) {
+    const skel = document.createElement("div");
+    skel.className = "explore-item skeleton";
+    exploreGrid.appendChild(skel);
   }
 
-  snapshot.forEach((doc) => {
-    const post = doc.data();
-    if (post.privacy === "public" || !post.privacy) {
-      exploreGrid.appendChild(createPostElement(doc.id, post));
+  let q;
+  if (currentCategory === "trending") {
+    q = query(
+      collection(db, "posts"),
+      where("likesCount", ">=", 5), // Simple trending logic
+      limit(24),
+    );
+  } else if (currentCategory === "news" || currentCategory === "sports") {
+    q = query(
+      collection(db, "posts"),
+      where("category", "==", currentCategory),
+      limit(24),
+    );
+  } else {
+    q = query(
+      collection(db, "posts"),
+      orderBy("timestamp", "desc"),
+      limit(50),
+    );
+  }
+
+  try {
+    const snapshot = await getDocs(q);
+    exploreGrid.innerHTML = "";
+
+    if (snapshot.empty) {
+      exploreGrid.innerHTML =
+        '<p style="text-align:center; padding:20px; grid-column: span 3;">No content found in this category.</p>';
+      return;
     }
-  });
+
+    snapshot.forEach((doc) => {
+      const post = doc.data();
+      if (post.privacy === "public" || !post.privacy) {
+        const div = document.createElement("div");
+        div.className = "explore-item";
+
+        // Prefer images/videos for the grid
+        if (post.imageUrl) {
+          div.innerHTML = `<img src="${post.imageUrl}" loading="lazy">`;
+        } else if (post.videoUrl) {
+          div.innerHTML = `<video src="${post.videoUrl}" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>`;
+        } else {
+          div.innerHTML = `<div style="padding:15px; font-size:0.8rem;">${post.text.substring(0, 50)}...</div>`;
+        }
+
+        div.addEventListener("click", () => openPostDetail(doc.id, post));
+        exploreGrid.appendChild(div);
+      }
+    });
+  } catch (e) {
+    console.error(e);
+    // If indices missing, fallback to simple query
+    const fallbackQ = query(
+      collection(db, "posts"),
+      orderBy("timestamp", "desc"),
+      limit(20),
+    );
+    const snap = await getDocs(fallbackQ);
+    exploreGrid.innerHTML = "";
+    snap.forEach((doc) => {
+      const post = doc.data();
+      const div = document.createElement("div");
+      div.className = "explore-item";
+      div.innerHTML = post.imageUrl
+        ? `<img src="${post.imageUrl}">`
+        : `<div style="padding:10px;">${post.text}</div>`;
+      exploreGrid.appendChild(div);
+    });
+  }
+}
+
+function openPostDetail(postId, post) {
+  // Reuse comment modal as post detail for now
+  openCommentModal(postId, post);
 }
 
 // --- Utils ---
@@ -1791,7 +1967,7 @@ editProfileForm.addEventListener("submit", async (e) => {
       bio: newBio,
       photoURL: newAvatar || currentUser.photoURL,
     });
-
+    
     // Batch update posts with new photo if changed
     if (newAvatar) {
       const batch = writeBatch(db);

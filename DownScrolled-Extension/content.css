@@ -1,0 +1,42 @@
+.ds-ai-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(135deg, #a855f7, #ec4899);
+    border: none;
+    border-radius: 12px;
+    padding: 2px 8px;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    color: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    height: 24px;
+}
+
+.ds-ai-btn:hover {
+    transform: translateY(-50%) scale(1.1);
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.5);
+}
+
+.ds-thinking {
+    pointer-events: none;
+    opacity: 0.8;
+    background: linear-gradient(135deg, #71767b, #333);
+    animation: ds-pulse 0.8s infinite alternate;
+}
+
+.ds-thinking::after {
+    content: "...";
+    margin-left: 4px;
+}
+
+@keyframes ds-pulse {
+    from { filter: brightness(1) scale(1); }
+    to { filter: brightness(1.5) scale(1.05); }
+}

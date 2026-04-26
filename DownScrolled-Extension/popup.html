@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: sans-serif; width: 300px; padding: 15px; background: #000; color: #fff; }
+    h2 { font-size: 1.2rem; color: #a855f7; margin-top: 0; }
+    p { font-size: 0.85rem; color: #71767b; }
+    input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: linear-gradient(135deg, #a855f7, #ec4899); border: none; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .status { font-size: 0.8rem; margin-top: 8px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>AI Assistant Settings</h2>
+  <p>Enter your OpenRouter API Key to enable AI Magic on social media.</p>
+  <input type="password" id="api-key" placeholder="sk-or-v1-..." />
+  <button id="save-btn">Save API Key</button>
+  <div class="status" id="status"></div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "DownScrolled AI Assistant",
+  "version": "1.0",
+  "description": "AI-powered smart comments for Facebook, Instagram, and more!",
+  "permissions": ["storage", "activeTab"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.facebook.com/*", "*://*.instagram.com/*", "*://*.twitter.com/*", "*://*.x.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "host_permissions": ["https://openrouter.ai/*"]
+}

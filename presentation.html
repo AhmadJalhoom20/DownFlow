@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DownScrolled - Technical Brief</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Noto+Kufi+Arabic:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #000000;
+            --bg-secondary: #0a0a0a;
+            --brand-color: #1d9bf0;
+            --text-primary: #ffffff;
+            --text-secondary: #8899a6;
+            --border-color: #1a1a1a;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Outfit', 'Noto Kufi Arabic', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .slide-deck {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        .frame {
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            padding: 80px;
+            width: 90%;
+            max-width: 1200px;
+            min-height: 600px;
+            position: relative;
+        }
+
+        .frame::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--brand-color);
+        }
+
+        h1 {
+            font-size: 5rem;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+            letter-spacing: -2px;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+            color: var(--brand-color);
+            margin: 0 0 40px 0;
+            font-weight: 700;
+        }
+
+        .point-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: right;
+        }
+
+        .point-item {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--text-primary);
+        }
+
+        .point-item i {
+            color: var(--brand-color);
+            width: 40px;
+            text-align: center;
+        }
+
+        .point-desc {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-right: 60px;
+            margin-top: -15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-nav {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            color: var(--brand-color);
+            border-color: var(--brand-color);
+        }
+
+        .progress-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: var(--brand-color);
+            width: 0;
+            transition: width 0.3s cubic-bezier(0.1, 0.7, 1.0, 0.1);
+        }
+
+        .technical-label {
+            position: absolute;
+            top: 40px;
+            left: 80px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="progress-indicator" id="indicator"></div>
+
+    <div class="slide-deck">
+        <!-- 01: Identification -->
+        <div class="slide active" id="s1">
+            <div class="frame">
+                <div class="technical-label">PROJECT ID: D-SCROLLED</div>
+                <h1>DownScrolled</h1>
+                <h2>AI-Integrated Social Framework</h2>
+                <div style="margin-top: 100px; font-size: 1.2rem; color: var(--text-secondary);">
+                    Technical Specification Briefing | Hackathon 2024
+                </div>
+            </div>
+        </div>
+
+        <!-- 02: Core Objectives -->
+        <div class="slide" id="s2">
+            <div class="frame">
+                <h2>الأهداف الرئيسية للمنصة</h2>
+                <ul class="point-list">
+                    <li class="point-item"><i class="fa-solid fa-square-poll-vertical"></i> تكامل الأتمتة الاجتماعية</li>
+                    <div class="point-desc">دمج الذكاء الاصطناعي التوليدي في الوظائف الأساسية للمستخدم.</div>
+                    
+                    <li class="point-item"><i class="fa-solid fa-microchip"></i> تقليل زمن الإنتاجية</li>
+                    <div class="point-desc">تحدي قيود الوقت في صياغة المنشورات والردود التفاعلية.</div>
+
+                    <li class="point-item"><i class="fa-solid fa-code-branch"></i> هندسة السياق اللغوي</li>
+                    <div class="point-desc">بناء نظام يفهم ويحلل أنماط الكتابة البشرية بدقة عالية.</div>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 03: Feature Set -->
+        <div class="slide" id="s3">
+            <div class="frame">
+                <h2>خدمات الأنظمة الذكية</h2>
+                <ul class="point-list">
+                    <li class="point-item"><i class="fa-solid fa-pen-to-square"></i> Post-Assist System</li>
+                    <div class="point-desc">دعم كتابة المنشورات عبر تحليل المسودات الأولية.</div>
+                    
+                    <li class="point-item"><i class="fa-solid fa-comment-nodes"></i> Smart Comment Engine</li>
+                    <div class="point-desc">توليد ردود سياقية تعتمد على محتوى المنشور المستهدف.</div>
+
+                    <li class="point-item"><i class="fa-solid fa-envelope-open-text"></i> DM Intelligence</li>
+                    <div class="point-desc">مساعدة فورية داخل نظام المراسلة لرفع كفاءة الحوار.</div>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 04: Technical Architecture -->
+        <div class="slide" id="s4">
+            <div class="frame">
+                <h2>البنية التحتية والبيانات</h2>
+                <ul class="point-list">
+                    <li class="point-item"><i class="fa-solid fa-database"></i> Firebase Real-time Core</li>
+                    <div class="point-desc">إدارة البيانات والمصادقة والدردشات في بيئة مزامنة لحظية.</div>
+                    
+                    <li class="point-item"><i class="fa-solid fa-cloud-bolt"></i> LLM Aggregation (OpenRouter)</li>
+                    <div class="point-desc">الوصول لنماذج الذكاء الاصطناعي الأقوى عالمياً لضمان الدقة.</div>
+
+                    <li class="point-item"><i class="fa-solid fa-shield-virus"></i> Cloud Data Integrity</li>
+                    <div class="point-desc">ضمان حماية وخصوصية بيانات المستخدمين أثناء المعالجة.</div>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 05: Evaluation Metric -->
+        <div class="slide" id="s5">
+            <div class="frame">
+                <h2>مقاييس الأداء والكفاءة</h2>
+                <ul class="point-list">
+                    <li class="point-item"><i class="fa-solid fa-bolt"></i> استجابة فائقة السرعة</li>
+                    <div class="point-desc">تم استخدام نظام الـ Streaming لتقليل وقت انتظار معالجة النصوص.</div>
+                    
+                    <li class="point-item"><i class="fa-solid fa-arrows-to-dot"></i> دقة التخصيص</li>
+                    <div class="point-desc">قدرة النظام على محاكاة أسلوب المستخدم وتخصيص النتائج.</div>
+
+                    <li class="point-item"><i class="fa-solid fa-expand"></i> القابلية للتوسع (Scalability)</li>
+                    <div class="point-desc">هيكلية نظيفة تسمح بإضافة ميزات ذكاء جديدة مستقبلاً.</div>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 06: Final Status -->
+        <div class="slide" id="s6">
+            <div class="frame" style="display: flex; flex-direction: column; justify-content: center; align-items: center; border: none;">
+                <h1>DownScrolled</h1>
+                <h2 style="border: none; padding: 0;">End of Brief | شكراً لكم</h2>
+            </div>
+        </div>
+
+        <div class="btn-nav">
+            <div class="nav-link" onclick="prev()">السابق</div>
+            <div class="nav-link" onclick="next()">التالي</div>
+        </div>
+    </div>
+
+    <script>
+        let slide = 1;
+        const total = 6;
+        function updateDeck() {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.getElementById(`s${slide}`).classList.add('active');
+            document.getElementById('indicator').style.width = `${(slide/total)*100}%`;
+        }
+        function next() { if(slide < total) { slide++; updateDeck(); } }
+        function prev() { if(slide > 1) { slide--; updateDeck(); } }
+        document.addEventListener('keydown', (e) => {
+            if(e.key === 'ArrowRight') prev();
+            if(e.key === 'ArrowLeft' || e.key === 'Enter') next();
+        });
+    </script>
+</body>
+</html>

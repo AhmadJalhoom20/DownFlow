@@ -125,11 +125,17 @@
               />
             </div>
           </header>
+          
+          <div class="explore-categories">
+            <button class="category-btn active" data-category="all">For You</button>
+            <button class="category-btn" data-category="trending">Trending</button>
+            <button class="category-btn" data-category="news">News</button>
+            <button class="category-btn" data-category="sports">Sports</button>
+            <button class="category-btn" data-category="entertainment">Entertainment</button>
+          </div>
+
           <div class="explore-grid" id="explore-grid">
             <!-- Random posts grid -->
-            <div class="loading-spinner">
-              <i class="fa-solid fa-circle-notch fa-spin"></i>
-            </div>
           </div>
         </div>
 
@@ -182,6 +188,9 @@
                   <!-- Messages injected here -->
                 </div>
                 <div class="chat-input-area">
+                  <button id="chat-ai-btn" title="AI Reply" class="btn-ai-mini">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                  </button>
                   <input
                     type="text"
                     id="chat-input"
@@ -458,6 +467,10 @@
               <!-- Emojis injected via JS -->
             </div>
           </div>
+          <div style="flex-grow: 1"></div>
+          <button class="btn-ai-magic" id="btn-ai-post-assist" title="AI Post Assistant">
+             <i class="fa-solid fa-wand-magic-sparkles"></i> AI Assist
+          </button>
         </div>
       </div>
     </div>
@@ -545,7 +558,10 @@
             placeholder="Post your reply"
           ></textarea>
         </div>
-        <div class="create-post-footer">
+        <div class="create-post-footer" style="justify-content: space-between; display: flex; align-items: center;">
+          <button class="btn-ai-magic" id="btn-ai-comment" title="Generate AI Comment">
+             <i class="fa-solid fa-wand-magic-sparkles"></i> AI Magic
+          </button>
           <button class="btn-primary btn-sm" id="submit-comment-btn">
             Reply
           </button>
