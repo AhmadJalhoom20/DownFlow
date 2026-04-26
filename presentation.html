@@ -164,15 +164,56 @@
     <div class="progress-indicator" id="indicator"></div>
 
     <div class="slide-deck">
-        <!-- 01: Identification -->
-        <div class="slide active" id="s1">
+        <!-- 00: Cover -->
+        <div class="slide active" id="s0">
             <div class="frame">
-                <div class="technical-label">PROJECT ID: D-SCROLLED</div>
+                <div class="technical-label">PROJECT ID: D-FLOW</div>
                 <h1>Downflow</h1>
                 <h2>AI-Integrated Social Framework</h2>
                 <div style="margin-top: 100px; font-size: 1.2rem; color: var(--text-secondary);">
-                    Technical Specification Briefing | Hackathon 2024
+                    Technical Specification Briefing 
                 </div>
+            </div>
+        </div>
+
+        <!-- 01: Development Timeline -->
+        <div class="slide" id="s1">
+            <div class="frame">
+                <div class="technical-label">LOG: DEVELOPMENT_TIMELINE_v1.0</div>
+                <h1>مخطط العمل الزمني (Timeline)</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 30px;">توزيع المهام التقنية خلال الهاكاثون باستخدام أدوات الذكاء الاصطناعي</p>
+                
+                <table style="width: 100%; border-collapse: collapse; background: rgba(255,255,255,0.03); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+                    <thead>
+                        <tr style="background: rgba(0, 186, 124, 0.2); color: var(--brand-color);">
+                            <th style="padding: 20px; text-align: right;">الزمن (ساعات)</th>
+                            <th style="padding: 20px; text-align: right;">الأداة المستخدمة</th>
+                            <th style="padding: 20px; text-align: right;">المهام والنتائج</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 20px;">الساعة 01</td>
+                            <td style="padding: 20px; font-weight: 700;">ChatGPT</td>
+                            <td style="padding: 20px; color: var(--text-secondary);">تحليل فكرة المشروع، دراسة الجدوى التقنية، واقتراح ميزات تنافسية.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 20px;">الساعة 02 - 03</td>
+                            <td style="padding: 20px; font-weight: 700;">Claude Design</td>
+                            <td style="padding: 20px; color: var(--text-secondary);">هندسة تجربة المستخدم (UX)، ابتكار التصاميم (UI) العصرية، وتنسيق الألوان.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                            <td style="padding: 20px;">الساعة 03 - 04</td>
+                            <td style="padding: 20px; font-weight: 700;">Google Gemini</td>
+                            <td style="padding: 20px; color: var(--text-secondary);">برمجة المنطق التفاعلي (Business Logic)، كتابة السكربتات، وربط الميزات.</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 20px;">الساعة 04 - 05</td>
+                            <td style="padding: 20px; font-weight: 700;">Gemini Pro 3</td>
+                            <td style="padding: 20px; color: var(--text-secondary);">إعداد البنية التحتية (Firebase)، تعديل قواعد البيانات، وضبط اتصالات الـ API.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -259,15 +300,15 @@
     </div>
 
     <script>
-        let slide = 1;
-        const total = 6;
+        let slide = 0;
+        const totalSlides = 7;
         function updateDeck() {
             document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
             document.getElementById(`s${slide}`).classList.add('active');
-            document.getElementById('indicator').style.width = `${(slide/total)*100}%`;
+            document.getElementById('indicator').style.width = `${((slide + 1)/totalSlides)*100}%`;
         }
-        function next() { if(slide < total) { slide++; updateDeck(); } }
-        function prev() { if(slide > 1) { slide--; updateDeck(); } }
+        function next() { if(slide < totalSlides - 1) { slide++; updateDeck(); } }
+        function prev() { if(slide > 0) { slide--; updateDeck(); } }
         document.addEventListener('keydown', (e) => {
             if(e.key === 'ArrowRight') prev();
             if(e.key === 'ArrowLeft' || e.key === 'Enter') next();
