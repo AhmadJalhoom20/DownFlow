@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "DownScrolled AI Assistant",
+  "name": "Downflow AI Assistant",
   "version": "1.0",
   "description": "AI-powered smart comments for Facebook, Instagram, and more!",
   "permissions": ["storage", "activeTab"],

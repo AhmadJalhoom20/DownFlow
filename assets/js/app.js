@@ -38,7 +38,7 @@ import {
   getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-console.log("DownScrolled App Initialized");
+console.log("Downflow App Initialized");
 
 // --- DOM Elements ---
 // Auth
@@ -1123,7 +1123,7 @@ btnAiComment.addEventListener("click", async () => {
     btnAiComment.disabled = true;
     commentTextInput.value = ""; // Clear previous
     
-    await generateSmartAI(currentPostForComment.text, false, (progress) => {
+    await generateSmartAI(currentPostForComment.text, 'comment', (progress) => {
         commentTextInput.value = progress;
     });
     
@@ -1146,7 +1146,7 @@ if (btnAiPostAssist) {
       btnAiPostAssist.disabled = true;
       postTextInput.value = ""; // Clear previous
       
-      await generateSmartAI(currentText, true, (progress) => {
+      await generateSmartAI(currentText, 'post', (progress) => {
           postTextInput.value = progress;
       });
       
@@ -1426,7 +1426,7 @@ if (chatAiBtn) {
            return;
       }
 
-      const aiReply = await generateSmartAI(messages, false, (progress) => {
+      const aiReply = await generateSmartAI(messages, 'reply', (progress) => {
           chatInput.value = progress;
       });
       if (aiReply) {

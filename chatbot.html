@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DownScrolled AI ChatBot</title>
+    <title>Downflow AI ChatBot</title>
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -157,22 +157,27 @@
 </head>
 <body>
     <div class="bot-container">
-        <header class="bot-header">
-            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
-            <div class="bot-info">
-                <div class="bot-avatar">
-                   <i class="fa-solid fa-robot"></i>
-                </div>
-                <div>
-                    <div style="font-weight: 700; color: white;">Deep AI Assistant</div>
-                    <div style="font-size: 0.8rem; color: #00ba7c;">Online</div>
+        <header class="bot-header" style="justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+                <div class="bot-info">
+                    <div class="bot-avatar">
+                       <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 700; color: white;">Downflow AI Assistant</div>
+                        <div style="font-size: 0.8rem; color: #00ba7c;">Online</div>
+                    </div>
                 </div>
             </div>
+            <button id="clear-chat" title="Clear History" style="background:transparent; border:none; color:var(--text-secondary); cursor:pointer; font-size:1.1rem;">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
         </header>
 
         <div class="messages-box" id="messages-box">
             <div class="message bot">
-                Hello! I am your DownScrolled AI Assistant. How can I help you today?
+                Hello! I am your Downflow AI Assistant. How can I help you today?
             </div>
         </div>
 

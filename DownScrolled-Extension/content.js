@@ -1,4 +1,4 @@
-console.log("DownScrolled AI Extension Active (Sniper Mode)");
+console.log("Downflow AI Extension Active (Sniper Mode)");
 
 function injectAIButtons() {
     const inputs = document.querySelectorAll('div[role="textbox"], textarea, [contenteditable="true"]');
